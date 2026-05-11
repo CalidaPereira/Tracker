@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="theme-color" content="#0A0A0F"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<title>Cal's Reclaiming Life</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Playfair+Display:wght@700;900&display=swap');
+:root{--bg:#0A0A0F;--surf:#13131C;--card:#1A1A25;--bdr:#22222E;--txt:#F0EDE8;
+  --acc:#E8845A;--wat:#5AB4E8;--med:#A55AE8;--str:#5AE8A0;--stp:#E8D45A;--wgt:#E85A8A;--slp:#8A7AE8;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{background:var(--bg);color:var(--txt);font-family:'DM Mono','Courier New',monospace;font-size:14px;min-height:100vh;overflow-x:hidden;}
+::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-thumb{background:var(--acc);border-radius:4px}
+input,textarea,button{font-family:inherit;font-size:inherit;}
+input{outline:none;}input[type=number]{-moz-appearance:textfield;}
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;}
+textarea{outline:none;resize:none;}button{cursor:pointer;border:none;background:none;}
+button:active{transform:scale(0.96);}
+.fade{animation:fi .22s ease;}@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.card{background:var(--card);border-radius:12px;padding:14px;margin-bottom:12px;}
+.lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:10px;display:block;}
+.tab{max-width:620px;margin:0 auto;padding:14px 16px 110px;display:none;}
+.tab.active{display:block;}
+.hidden{display:none!important;}
+#header{position:sticky;top:0;z-index:20;background:var(--surf);border-bottom:1px solid var(--bdr);}
+#nav{position:fixed;bottom:0;left:0;right:0;background:var(--surf);border-top:1px solid var(--bdr);padding-bottom:env(safe-area-inset-bottom,16px);z-index:30;display:flex;}
+.nb{flex:1;padding:10px 0 5px;border-top:2px solid transparent;color:#444;text-align:center;}
+.nb.on{color:var(--acc);border-top-color:var(--acc);}
+.nb p:first-child{font-size:16px;margin-bottom:2px;}.nb p:last-child{font-size:7px;letter-spacing:1px;}
+.rblock{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;border:1px solid var(--bdr);margin-bottom:4px;cursor:pointer;}
+.chk{width:20px;height:20px;border-radius:10px;flex-shrink:0;border:2px solid #333;display:flex;align-items:center;justify-content:center;font-size:10px;}
+.row{display:flex;align-items:center;gap:11px;padding:11px 13px;cursor:pointer;}
+.row:active{background:rgba(255,255,255,.04);}
+input[type=time]{color-scheme:dark;}
+</style>
+</head>
+<body>
+
+<div id="load" style="position:fixed;inset:0;background:var(--bg);z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;">
+  <div style="font-size:48px;">💊</div>
+  <p style="font-family:'Playfair Display',serif;font-size:22px;color:var(--acc);">Cal's Reclaiming Life</p>
+  <p style="font-size:11px;color:#555;letter-spacing:2px;">LOADING...</p>
+</div>
+
+<div id="header">
+  <div style="max-width:620px;margin:0 auto;padding:11px 16px 9px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;">
+      <div>
+        <p style="font-size:8px;letter-spacing:3px;color:var(--acc);text-transform:uppercase;margin-bottom:1px;">Cal's Reclaiming Life</p>
+        <h1 id="htitle" style="font-family:'Playfair Display',serif;font-size:17px;font-weight:900;line-height:1;">Dashboard</h1>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span id="sstatus" class="hidden" style="font-size:9px;padding:2px 8px;border-radius:10px;"></span>
+        <div style="text-align:right;">
+          <p style="font-size:8px;color:#444;margin-bottom:1px;">weight</p>
+          <p id="hweight" style="font-size:14px;color:var(--acc);line-height:1;">— kg</p>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div id="streak-pill" style="display:flex;align-items:center;gap:5px;border:1px solid var(--bdr);border-radius:20px;padding:2px 10px;">
+        <span style="font-size:12px;">🔥</span>
+        <span id="streak-txt" style="font-size:10px;color:#666;">0 day streak</span>
+      </div>
+      <div id="hmini" style="display:flex;gap:3px;"></div>
+    </div>
+  </div>
+</div>
+
+<div id="app" style="opacity:0;transition:opacity .3s;">
+
+<!-- DASHBOARD -->
+<div id="t-dash" class="tab active">
+  <!-- Google Drive -->
+  <div class="card">
+    <span class="lbl">☁️ Google Drive Sync</span>
+    <div id="gd-off">
+      <p style="font-size:11px;color:#666;margin-bottom:12px;line-height:1.6;">Connect Google Drive to automatically save your data to a JSON file accessible from any device.</p>
+      <button onclick="gdSignIn()" style="width:100%;padding:11px;border-radius:10px;background:var(--acc);color:#0E0E12;font-size:12px;font-weight:500;">🔗 Connect Google Drive</button>
+    </div>
+    <div id="gd-on" class="hidden">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div><p style="font-size:12px;color:var(--str);">✓ Connected</p><p id="gd-file" style="font-size:10px;color:#555;margin-top:2px;"></p></div>
+        <button onclick="gdSignOut()" style="font-size:10px;color:#555;padding:5px 10px;border-radius:6px;background:var(--bdr);">Disconnect</button>
+      </div>
+      <p id="gd-sync" style="font-size:9px;color:#444;margin-top:6px;"></p>
+    </div>
+  </div>
+
+  <!-- Day type -->
+  <div id="dtype-sel" style="display:flex;gap:5px;margin-bottom:12px;"></div>
+
+  <!-- Travel card -->
+  <div id="travel-card" class="card hidden" style="text-align:center;">
+    <p style="font-size:40px;margin-bottom:10px;">🚂</p>
+    <p style="font-size:14px;color:#E85A5A;font-weight:500;margin-bottom:6px;">Travel Day</p>
+    <p style="font-size:11px;color:#555;margin-bottom:16px;line-height:1.7;">No routine today — logged for context.</p>
+    <p style="font-size:9px;color:#555;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">Overnight stay?</p>
+    <div style="display:flex;gap:8px;max-width:180px;margin:0 auto;">
+      <button id="t-yes" onclick="setOvernight('Yes')" style="flex:1;padding:10px;border-radius:8px;border:1px solid var(--bdr);color:#555;font-size:13px;background:var(--surf);">Yes</button>
+      <button id="t-no" onclick="setOvernight('No')" style="flex:1;padding:10px;border-radius:8px;border:1px solid var(--bdr);color:#555;font-size:13px;background:var(--surf);">No</button>
+    </div>
+  </div>
+
+  <!-- Routine -->
+  <div id="routine-card" class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <div><span class="lbl" style="margin-bottom:2px;">Today's Routine</span><p id="rprog" style="font-size:11px;color:#555;">0/0 done</p></div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <div style="height:4px;width:70px;background:var(--bdr);border-radius:4px;overflow:hidden;"><div id="rbar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--acc),var(--str));border-radius:4px;transition:width .4s;"></div></div>
+        <span id="rpct" style="font-size:10px;color:var(--acc);">0%</span>
+      </div>
+    </div>
+    <div id="rblocks"></div>
+  </div>
+
+  <!-- Date nav + rings -->
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <button onclick="shiftView(-1)" style="background:var(--bdr);color:var(--txt);border-radius:8px;padding:5px 12px;font-size:16px;">‹</button>
+      <div style="text-align:center;">
+        <p id="vdate-lbl" style="font-size:11px;color:var(--acc);font-weight:500;">Today ✦</p>
+        <button id="today-btn" onclick="setView(isoToday())" class="hidden" style="font-size:9px;color:var(--acc);letter-spacing:1px;">BACK TO TODAY</button>
+      </div>
+      <button id="next-btn" onclick="shiftView(1)" style="background:var(--bdr);color:#333;border-radius:8px;padding:5px 12px;font-size:16px;">›</button>
+    </div>
+    <div id="rings" style="display:flex;justify-content:space-around;margin-bottom:12px;"></div>
+    <div style="height:3px;background:var(--bdr);border-radius:4px;overflow:hidden;"><div id="sbar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--med),var(--str));transition:width .5s;border-radius:4px;"></div></div>
+    <p id="smsg" style="font-size:9px;color:#555;margin-top:5px;text-align:center;"></p>
+  </div>
+
+  <!-- Week strip -->
+  <div class="card">
+    <span class="lbl">This Week</span>
+    <div id="wstrip" style="display:flex;gap:6px;"></div>
+    <p style="font-size:8px;color:#444;margin-top:8px;text-align:center;">4+ rings = streak day · ⭐ = perfect (all 5)</p>
+  </div>
+
+  <!-- Calendar -->
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <span id="cal-lbl" class="lbl" style="margin-bottom:0;"></span>
+      <div style="display:flex;gap:5px;">
+        <button onclick="shiftCal(-1)" style="background:var(--bdr);color:var(--txt);border-radius:6px;padding:3px 9px;font-size:13px;">‹</button>
+        <button onclick="shiftCal(1)" style="background:var(--bdr);color:var(--txt);border-radius:6px;padding:3px 9px;font-size:13px;">›</button>
+      </div>
+    </div>
+    <div id="calgrid"></div>
+  </div>
+
+  <!-- Trend chart -->
+  <div class="card">
+    <span class="lbl">Historical Trends</span>
+    <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;" id="chart-btns"></div>
+    <svg id="tchart" width="100%" height="70" viewBox="0 0 300 70" style="overflow:visible;display:block;"></svg>
+    <p id="chart-empty" class="hidden" style="font-size:12px;color:#444;text-align:center;padding:18px 0;">Log more data to see trends 📈</p>
+  </div>
+
+  <!-- PBs -->
+  <div class="card">
+    <span class="lbl">Personal Bests</span>
+    <div id="pbs" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"></div>
+  </div>
+
+  <!-- Export/Import -->
+  <div class="card">
+    <span class="lbl">Your Data</span>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <button onclick="doExport()" style="padding:12px 8px;border-radius:10px;background:rgba(138,122,232,.2);border:1px solid var(--slp);color:var(--slp);font-size:11px;font-weight:500;">⬇️ Export JSON</button>
+      <label style="padding:12px 8px;border-radius:10px;background:rgba(90,232,160,.2);border:1px solid var(--str);color:var(--str);font-size:11px;font-weight:500;text-align:center;cursor:pointer;">⬆️ Import JSON<input type="file" accept=".json" onchange="doImport(event)" style="display:none;"/></label>
+    </div>
+  </div>
+</div>
+
+<!-- WORKOUT -->
+<div id="t-wkt" class="tab">
+  <div id="dsel" style="display:flex;gap:5px;overflow-x:auto;margin-bottom:14px;"></div>
+  <div id="wcontent"></div>
+  <div class="card" style="margin-top:14px;">
+    <span class="lbl" style="color:var(--stp);">Daily Steps — Goal 7,500</span>
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">
+      <div style="position:relative;flex-shrink:0;">
+        <svg width="70" height="70" style="transform:rotate(-90deg);">
+          <circle cx="35" cy="35" r="29" fill="none" stroke="var(--bdr)" stroke-width="6"/>
+          <circle id="sring" cx="35" cy="35" r="29" fill="none" stroke="var(--stp)" stroke-width="6" stroke-dasharray="182" stroke-dashoffset="182" stroke-linecap="round" style="transition:stroke-dashoffset .5s;"/>
+        </svg>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;"><span id="spct" style="font-size:9px;color:var(--stp);">0%</span></div>
+      </div>
+      <div><p id="sdisp" style="font-size:28px;color:var(--stp);font-weight:500;">0</p><p style="font-size:10px;color:#555;">steps today</p><p id="srem" style="font-size:10px;color:var(--stp);margin-top:2px;"></p></div>
+    </div>
+    <div style="display:flex;gap:7px;margin-bottom:14px;">
+      <input id="sinput" type="number" placeholder="Enter today's steps" style="flex:1;padding:10px 12px;background:var(--surf);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);font-size:15px;"/>
+      <button onclick="logSteps()" style="padding:10px 16px;border-radius:8px;background:var(--stp);color:#0E0E12;font-size:11px;font-weight:500;">LOG</button>
+    </div>
+    <span class="lbl">Last 7 Days</span>
+    <div id="schart" style="display:flex;align-items:flex-end;gap:5px;height:85px;"></div>
+  </div>
+  <div style="padding:11px 13px;background:var(--card);border-radius:10px;display:flex;gap:10px;align-items:center;">
+    <span style="font-size:18px;">🚶‍♀️</span><p style="font-size:11px;color:#666;">15–20 min walk after meals lowers blood sugar and counts toward your step goal!</p>
+  </div>
+</div>
+
+<!-- BODY -->
+<div id="t-body" class="tab">
+  <div id="wstats" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;"></div>
+  <div class="card"><span class="lbl" style="color:var(--wgt);">Weight Trend</span><svg id="wchart" width="100%" height="70" viewBox="0 0 300 70" style="overflow:visible;display:block;"></svg></div>
+  <div class="card">
+    <span class="lbl" style="color:var(--wgt);">Monday Weigh-in</span>
+    <div style="display:flex;gap:7px;margin-bottom:7px;">
+      <div style="flex:1;position:relative;"><input id="winput" type="number" placeholder="e.g. 71.5" step="0.1" style="width:100%;padding:10px 34px 10px 12px;background:var(--surf);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);font-size:16px;"/><span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:10px;color:#555;">kg</span></div>
+      <button onclick="logWeight()" style="padding:10px 14px;border-radius:8px;background:var(--wgt);color:#0E0E12;font-size:11px;font-weight:500;min-width:52px;">LOG</button>
+    </div>
+    <input id="wnote" type="text" placeholder="Optional note…" style="width:100%;padding:9px 12px;background:var(--surf);border:1px solid var(--bdr);border-radius:8px;color:#888;font-size:12px;"/>
+  </div>
+  <div class="card" style="margin-bottom:20px;"><div id="whist"></div></div>
+  <div class="card">
+    <span class="lbl" style="color:var(--wat);">Daily Water</span>
+    <div id="wstage" style="display:flex;gap:6px;margin-bottom:12px;"></div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+      <div style="position:relative;flex-shrink:0;">
+        <svg width="66" height="66" style="transform:rotate(-90deg);">
+          <circle cx="33" cy="33" r="27" fill="none" stroke="var(--bdr)" stroke-width="6"/>
+          <circle id="wring" cx="33" cy="33" r="27" fill="none" stroke="var(--wat)" stroke-width="6" stroke-dasharray="170" stroke-dashoffset="170" stroke-linecap="round" style="transition:stroke-dashoffset .5s;"/>
+        </svg>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;"><span id="wpct" style="font-size:9px;color:var(--wat);">0%</span></div>
+      </div>
+      <div><p id="wdisp" style="font-size:26px;color:var(--wat);font-weight:500;">0 <span style="font-size:11px;color:#555;">ml</span></p><p id="wrem" style="font-size:10px;color:#555;"></p></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:7px;">
+      <button onclick="addWater(150)" style="padding:8px;border-radius:8px;background:var(--surf);border:1px solid var(--bdr);color:var(--wat);">+150</button>
+      <button onclick="addWater(250)" style="padding:8px;border-radius:8px;background:var(--surf);border:1px solid var(--bdr);color:var(--wat);">+250</button>
+      <button onclick="addWater(330)" style="padding:8px;border-radius:8px;background:var(--surf);border:1px solid var(--bdr);color:var(--wat);">+330</button>
+      <button onclick="addWater(500)" style="padding:8px;border-radius:8px;background:var(--surf);border:1px solid var(--bdr);color:var(--wat);">+500</button>
+    </div>
+    <div style="display:flex;gap:7px;">
+      <input id="wcustom" type="number" placeholder="Custom ml" style="flex:1;padding:9px 12px;background:var(--surf);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);font-size:13px;"/>
+      <button onclick="addCustomWater()" style="padding:9px 13px;border-radius:8px;background:var(--wat);color:#0E0E12;font-size:11px;">ADD</button>
+      <button onclick="resetWater()" style="padding:9px 10px;border-radius:8px;background:var(--surf);border:1px solid var(--bdr);color:#555;font-size:12px;">↺</button>
+    </div>
+  </div>
+</div>
+
+<!-- MEDS -->
+<div id="t-meds" class="tab">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+    <div class="card" style="text-align:center;margin-bottom:0;"><span class="lbl">Today</span><p id="mcount" style="font-size:20px;color:var(--med);">0<span style="font-size:11px;color:#555;">/0</span></p></div>
+    <div class="card" style="text-align:center;margin-bottom:0;"><span class="lbl">Streak 🔥</span><p id="mstreak" style="font-size:20px;color:var(--acc);">0<span style="font-size:11px;color:#555;"> days</span></p></div>
+  </div>
+  <div style="margin-bottom:12px;padding:9px 12px;background:rgba(232,132,90,.1);border-left:3px solid var(--acc);border-radius:0 8px 8px 0;"><p style="font-size:11px;color:var(--acc);line-height:1.6;">⚠️ Berberine: WITH food only. Week 1: 1 cap → week 2: 2 caps.</p></div>
+  <div id="mslots"></div>
+  <div class="card"><span class="lbl">Last 7 Days</span><div id="mhist" style="display:flex;gap:5px;"></div></div>
+</div>
+
+<!-- MOOD -->
+<div id="t-mood" class="tab">
+  <div class="card">
+    <span class="lbl" style="color:var(--str);">How stressed are you today?</span>
+    <div id="sbig" class="hidden" style="text-align:center;margin-bottom:14px;"><p id="semoji" style="font-size:46px;margin-bottom:4px;"></p><p id="slabel" style="font-size:16px;"></p><p id="slevel" style="font-size:10px;color:#555;"></p></div>
+    <div id="sbtns" style="display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:10px;"></div>
+    <textarea id="snote" placeholder="What's on your mind? (optional)" style="width:100%;padding:10px 12px;background:var(--surf);border:1px solid var(--bdr);border-radius:8px;color:#888;font-size:12px;height:60px;" oninput="updateStressNote()"></textarea>
+  </div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <span class="lbl" style="color:var(--str);margin-bottom:0;">Last 7 Days</span>
+      <span id="savg" style="font-size:10px;"></span>
+    </div>
+    <div id="scchart" style="display:flex;align-items:flex-end;gap:5px;height:70px;"></div>
+  </div>
+  <div class="card">
+    <span class="lbl" style="color:var(--str);">PCOS Stress Busters</span>
+    <div id="stips"></div>
+  </div>
+</div>
+
+<!-- SLEEP -->
+<div id="t-sleep" class="tab">
+  <div id="sleepstats" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;"></div>
+  <div class="card">
+    <span class="lbl" style="color:var(--slp);">Log Last Night's Sleep</span>
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
+      <div style="position:relative;flex-shrink:0;">
+        <svg width="70" height="70" style="transform:rotate(-90deg);">
+          <circle cx="35" cy="35" r="29" fill="none" stroke="var(--bdr)" stroke-width="6"/>
+          <circle id="slring" cx="35" cy="35" r="29" fill="none" stroke="var(--slp)" stroke-width="6" stroke-dasharray="182" stroke-dashoffset="182" stroke-linecap="round" style="transition:stroke-dashoffset .5s;"/>
+        </svg>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;"><span id="slpct" style="font-size:9px;color:var(--slp);">0%</span></div>
+      </div>
+      <div><p id="slhrs" style="font-size:26px;color:var(--slp);font-weight:500;">—</p><p style="font-size:10px;color:#555;">of 8h goal</p><p id="slstat" style="font-size:10px;color:var(--slp);margin-top:2px;"></p></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+      <div><p style="font-size:9px;color:#555;margin-bottom:5px;">🌙 Bedtime</p><input id="slbed" type="time" oninput="updateSleep()" style="width:100%;padding:10px 12px;background:var(--surf);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);font-size:14px;"/></div>
+      <div><p style="font-size:9px;color:#555;margin-bottom:5px;">☀️ Wake time</p><input id="slwake" type="time" oninput="updateSleep()" style="width:100%;padding:10px 12px;background:var(--surf);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);font-size:14px;"/></div>
+    </div>
+    <p style="font-size:9px;color:#555;margin-bottom:8px;">Sleep quality</p>
+    <div id="sqbtns" style="display:flex;gap:6px;margin-bottom:10px;"></div>
+    <p id="sqlabel" style="font-size:10px;color:var(--slp);text-align:center;margin-bottom:10px;min-height:16px;"></p>
+    <textarea id="slnote" placeholder="What affected your sleep?" style="width:100%;padding:10px 12px;background:var(--surf);border:1px solid var(--bdr);border-radius:8px;color:#888;font-size:12px;height:60px;" oninput="saveField('sleepNote',this.value)"></textarea>
+  </div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <span class="lbl" style="color:var(--slp);margin-bottom:0;">Last 7 Days</span>
+      <span id="slavg" style="font-size:10px;color:var(--slp);"></span>
+    </div>
+    <div id="slchart" style="display:flex;align-items:flex-end;gap:5px;height:90px;margin-bottom:6px;"></div>
+  </div>
+  <div class="card">
+    <span class="lbl" style="color:var(--slp);">Better Sleep For PCOS</span>
+    <div id="sltips"></div>
+  </div>
+</div>
+
+</div><!-- /app -->
+
+<div id="nav">
+  <button class="nb on" onclick="goTab('dash')"><p>📊</p><p>DASH</p></button>
+  <button class="nb" onclick="goTab('wkt')"><p>🏋️</p><p>WORKOUT</p></button>
+  <button class="nb" onclick="goTab('body')"><p>⚖️</p><p>BODY</p></button>
+  <button class="nb" onclick="goTab('meds')"><p>💊</p><p>MEDS</p></button>
+  <button class="nb" onclick="goTab('mood')"><p>🧘</p><p>MOOD</p></button>
+  <button class="nb" onclick="goTab('sleep')"><p>😴</p><p>SLEEP</p></button>
+</div>
+
+
+<script>
+// ── CONFIG (user fills in Client ID after Google Cloud setup) ──
+var CLIENT_ID = '182049240213-e2u4c778et1f3tmdumgjk0pffg9pcihj.apps.googleusercontent.com';
+
+// ── CONSTANTS ──
+var STEP_GOAL=7500, SLEEP_GOAL=8, START_W=72, TARGET_W=58;
+var WATER_GOALS=[1500,2000,2500], WATER_LBL=['Wk 1–2','Wk 3–4','Wk 5+'];
+var DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+var MEDS=[
+  {slot:'morning',label:'Morning',emoji:'🌅',time:'With breakfast',color:'#E8D45A',
+   items:[{id:'fs_m',n:'Frauenstärke',d:'2 capsules'},{id:'coq',n:'CoQ10',d:'1 capsule'}]},
+  {slot:'lunch',label:'Lunch',emoji:'☀️',time:'With food',color:'#E8845A',
+   items:[{id:'fs_l',n:'Frauenstärke',d:'1 capsule'},{id:'multi',n:'Multivitamin',d:'1 tablet'}]},
+  {slot:'dinner',label:'With Dinner',emoji:'🍳',time:'Fat-soluble stack',color:'#E8845A',
+   items:[{id:'curc',n:'Curcuma + D3',d:'1 capsule'},{id:'omega',n:'Omega 3',d:'1 capsule'},{id:'berb',n:'Berberine',d:'1 cap (→2 after 2 weeks) ⚠️'}]},
+  {slot:'winddown',label:'Before Dinner',emoji:'🌙',time:'~19:00 · 60 min before bed',color:'#8A7AE8',
+   items:[{id:'mag',n:'Magnesium Glycinate',d:'1-2 capsules · promotes deep sleep'}]},
+];
+var TOTAL_MEDS=MEDS.reduce(function(a,s){return a+s.items.length;},0);
+
+var STRESS=[
+  {v:1,l:'Peaceful',e:'😌',c:'#5AE8A0'},{v:2,l:'Calm',e:'🙂',c:'#5AE8A0'},
+  {v:3,l:'Okay',e:'😐',c:'#A8E85A'},{v:4,l:'Mild',e:'😕',c:'#E8D45A'},
+  {v:5,l:'Moderate',e:'😟',c:'#E8D45A'},{v:6,l:'Tense',e:'😰',c:'#E8A85A'},
+  {v:7,l:'Stressed',e:'😣',c:'#E8845A'},{v:8,l:'High',e:'😤',c:'#E8604A'},
+  {v:9,l:'Very High',e:'😩',c:'#E8453A'},{v:10,l:'Overwhelmed',e:'😭',c:'#CC2A2A'},
+];
+
+var ROUTINES={
+  regular:{label:'Regular Day',emoji:'🏠',blocks:[
+    {id:'wake',time:'5:30',dur:'30 min',label:'Wake up',emoji:'🌅',color:'#E8D45A'},
+    {id:'exercise',time:'6:00',dur:'50 min',label:'Exercise',emoji:'🏋️',color:'#E8845A'},
+    {id:'bath',time:'6:50',dur:'30 min',label:'Bath',emoji:'🚿',color:'#5AB4E8'},
+    {id:'face',time:'7:20',dur:'15 min',label:'Face routine',emoji:'🧴',color:'#5AB4E8'},
+    {id:'breakfast',time:'7:35',dur:'30 min',label:'Breakfast',emoji:'🥗',color:'#5AE8A0'},
+    {id:'walk1',time:'8:05',dur:'20 min',label:'Walk after breakfast 🩸',emoji:'🚶‍♀️',color:'#5AE8A0'},
+    {id:'meds',time:'8:25',dur:'10 min',label:'Meds + Creatine',emoji:'💊',color:'#A55AE8'},
+    {id:'german',time:'8:35',dur:'25 min',label:'German Vocab',emoji:'🇩🇪',color:'#E8605A'},
+    {id:'work',time:'9:00',dur:'3 hrs',label:'Work',emoji:'💼',color:'#6A7AE8'},
+    {id:'lunch',time:'12:00',dur:'40 min',label:'Lunch · Meds (lunch)',emoji:'🥘',color:'#5AE8A0'},
+    {id:'walk2',time:'12:40',dur:'20 min',label:'Walk after lunch 🩸',emoji:'🚶‍♀️',color:'#5AE8A0'},
+    {id:'work2',time:'13:00',dur:'4 hrs',label:'Work',emoji:'💼',color:'#6A7AE8'},
+    {id:'walk3',time:'17:00',dur:'20 min',label:'End of work walk 👟',emoji:'🚶‍♀️',color:'#E8D45A'},
+    {id:'german2',time:'17:20',dur:'1 hr',label:'German Study',emoji:'🇩🇪',color:'#E8605A'},
+    {id:'upskill',time:'18:20',dur:'1 hr',label:'Upskill',emoji:'📚',color:'#A55AE8'},
+    {id:'relax',time:'19:20',dur:'20 min',label:'Relax',emoji:'🛋️',color:'#5AE8A0'},
+    {id:'dinner',time:'19:40',dur:'30 min',label:'Dinner · Meds (dinner/night)',emoji:'🍳',color:'#E8845A'},
+    {id:'walk4',time:'20:10',dur:'20 min',label:'Walk after dinner 🩸',emoji:'🚶‍♀️',color:'#5AE8A0'},
+    {id:'winddown',time:'20:30',dur:'30 min',label:'Wind down · No screens',emoji:'🌙',color:'#8A7AE8'},
+    {id:'sleep',time:'21:00',dur:'8.5 hrs',label:'Sleep',emoji:'😴',color:'#8A7AE8'},
+  ]},
+  saturday:{label:'Saturday',emoji:'✨',blocks:[
+    {id:'wake',time:'5:30',dur:'30 min',label:'Wake up',emoji:'🌅',color:'#E8D45A'},
+    {id:'exercise',time:'6:00',dur:'50 min',label:'Exercise',emoji:'🏋️',color:'#E8845A'},
+    {id:'bath',time:'6:50',dur:'30 min',label:'Bath',emoji:'🚿',color:'#5AB4E8'},
+    {id:'face',time:'7:20',dur:'15 min',label:'Face routine',emoji:'🧴',color:'#5AB4E8'},
+    {id:'breakfast',time:'7:35',dur:'30 min',label:'Breakfast',emoji:'🥗',color:'#5AE8A0'},
+    {id:'walk1',time:'8:05',dur:'20 min',label:'Walk after breakfast 🩸',emoji:'🚶‍♀️',color:'#5AE8A0'},
+    {id:'meds',time:'8:25',dur:'10 min',label:'Meds + Creatine',emoji:'💊',color:'#A55AE8'},
+    {id:'german',time:'8:35',dur:'1 hr 25 min',label:'German Study (full session)',emoji:'🇩🇪',color:'#E8605A'},
+    {id:'upskill',time:'10:00',dur:'1 hr',label:'Upskill',emoji:'📚',color:'#A55AE8'},
+    {id:'jobs',time:'11:00',dur:'1 hr',label:'Apply for jobs',emoji:'📩',color:'#E8D45A'},
+    {id:'grocery',time:'11:00',dur:'1 hr',label:'Grocery run',emoji:'🛒',color:'#666'},
+    {id:'lunch',time:'12:00',dur:'30 min',label:'Lunch · Meds (lunch)',emoji:'🥘',color:'#5AE8A0'},
+    {id:'walk2',time:'12:30',dur:'20 min',label:'Walk after lunch 🩸',emoji:'🚶‍♀️',color:'#5AE8A0'},
+    {id:'mealprep',time:'12:50',dur:'1 hr 30 min',label:'Meal prep / cook',emoji:'🍳',color:'#E8845A'},
+    {id:'creative',time:'15:20',dur:'2 hrs',label:'Creative hobbies',emoji:'🎨',color:'#5AB4E8'},
+    {id:'free',time:'17:20',dur:'1 hr 40 min',label:'Free time',emoji:'🛋️',color:'#5AE8A0'},
+    {id:'dinner',time:'19:00',dur:'30 min',label:'Dinner · Meds (dinner/night)',emoji:'🍳',color:'#E8845A'},
+    {id:'walk3',time:'19:30',dur:'20 min',label:'Walk after dinner 🩸',emoji:'🚶‍♀️',color:'#5AE8A0'},
+    {id:'winddown',time:'19:50',dur:'1 hr 10 min',label:'Wind down · No screens',emoji:'🌙',color:'#8A7AE8'},
+    {id:'sleep',time:'21:00',dur:'8.5 hrs',label:'Sleep',emoji:'😴',color:'#8A7AE8'},
+  ]},
+  sunday:{label:'Sunday',emoji:'🌿',blocks:[
+    {id:'wake',time:'5:30',dur:'30 min',label:'Wake up',emoji:'🌅',color:'#E8D45A'},
+    {id:'exercise',time:'6:00',dur:'50 min',label:'Exercise',emoji:'🏋️',color:'#E8845A'},
+    {id:'bath',time:'6:50',dur:'30 min',label:'Bath',emoji:'🚿',color:'#5AB4E8'},
+    {id:'face',time:'7:20',dur:'15 min',label:'Face routine',emoji:'🧴',color:'#5AB4E8'},
+    {id:'breakfast',time:'7:35',dur:'30 min',label:'Breakfast',emoji:'🥗',color:'#5AE8A0'},
+    {id:'walk1',time:'8:05',dur:'20 min',label:'Walk after breakfast 🩸',emoji:'🚶‍♀️',color:'#5AE8A0'},
+    {id:'meds',time:'8:25',dur:'10 min',label:'Meds + Creatine',emoji:'💊',color:'#A55AE8'},
+    {id:'callhome',time:'8:35',dur:'30 min',label:'Call home',emoji:'📞',color:'#5AE8A0'},
+    {id:'free1',time:'9:05',dur:'2 hrs 55 min',label:'Free time',emoji:'🛋️',color:'#5AE8A0'},
+    {id:'lunch',time:'12:00',dur:'30 min',label:'Lunch · Meds (lunch)',emoji:'🥘',color:'#5AE8A0'},
+    {id:'walk2',time:'12:30',dur:'20 min',label:'Walk after lunch 🩸',emoji:'🚶‍♀️',color:'#5AE8A0'},
+    {id:'free2',time:'12:50',dur:'4 hrs 10 min',label:'Free time',emoji:'🛋️',color:'#5AE8A0'},
+    {id:'walk3',time:'17:00',dur:'20 min',label:'Evening walk — finish steps 👟',emoji:'🚶‍♀️',color:'#E8D45A'},
+    {id:'free3',time:'17:20',dur:'1 hr 40 min',label:'Free time',emoji:'🛋️',color:'#5AE8A0'},
+    {id:'dinner',time:'19:00',dur:'30 min',label:'Dinner · Meds (dinner/night)',emoji:'🍳',color:'#E8845A'},
+    {id:'walk4',time:'19:30',dur:'20 min',label:'Walk after dinner 🩸',emoji:'🚶‍♀️',color:'#5AE8A0'},
+    {id:'winddown',time:'19:50',dur:'1 hr 10 min',label:'Wind down · No screens',emoji:'🌙',color:'#8A7AE8'},
+    {id:'sleep',time:'21:00',dur:'8.5 hrs',label:'Sleep',emoji:'😴',color:'#8A7AE8'},
+  ]},
+  travel:{label:'Travel Day',emoji:'🚂',blocks:[]},
+};
+
+var WORKOUTS={
+  Mon:{l:'Lower Body',e:'🦵',dur:'45 min',c:'#E8845A',
+    wu:['Hip circles 10 each','Leg swings 10 each','Glute bridges 10 reps'],
+    ex:[{n:'Goblet Squat',s:3,r:'12',q:'Dumbbell'},{n:'Romanian Deadlift',s:3,r:'10',q:'Dumbbells'},
+        {n:'Glute Bridge',s:3,r:'15',q:'Band'},{n:'Reverse Lunge',s:3,r:'10 each',q:'Dumbbells'},
+        {n:'Banded Side Steps',s:3,r:'20 each',q:'Band'},{n:'Calf Raises',s:3,r:'15',q:'BW'}],
+    cd:['Hip flexor 30s each','Hamstring 30s each','Glute 30s each']},
+  Tue:{l:'Cardio + Core',e:'🔥',dur:'45 min',c:'#5AB4E8',
+    wu:['March in place 2 min','Arm swings 1 min'],
+    ex:[{n:'Low-Impact Cardio',s:1,r:'25 min',q:'BW',nt:'March, step touches, shadow boxing'},
+        {n:'Plank Hold',s:3,r:'30 sec',q:'BW'},{n:'Dead Bug',s:3,r:'10 each',q:'BW'},
+        {n:'Bicycle Crunch',s:3,r:'15 each',q:'BW'},{n:'Bird Dog',s:3,r:'10 each',q:'BW'},
+        {n:'Glute Bridge Hold',s:3,r:'30 sec',q:'BW'}],
+    cd:["Child's pose 1 min",'Seated twist 30s each']},
+  Wed:{l:'Upper Body',e:'💪',dur:'45 min',c:'#A55AE8',
+    wu:['Arm circles 30s each','Band pull apart 15','Shoulder rolls 1 min'],
+    ex:[{n:'Chest Press',s:3,r:'12',q:'Dumbbells'},{n:'Single Arm Row',s:3,r:'10 each',q:'Dumbbell'},
+        {n:'Shoulder Press',s:3,r:'12',q:'Dumbbells'},{n:'Bicep Curl',s:3,r:'12',q:'Dumbbells'},
+        {n:'Tricep Kickback',s:3,r:'12',q:'Dumbbells'},{n:'Lateral Raise',s:3,r:'12',q:'Dumbbells'},
+        {n:'Band Pull Apart',s:3,r:'15',q:'Band'}],
+    cd:['Chest stretch 30s','Shoulder stretch 30s each','Tricep 30s each']},
+  Thu:{l:'Yoga & Mobility',e:'🧘',dur:'30 min',c:'#5AE8A0',note:'Low-energy day — swap any session here on bad fatigue days',
+    wu:[],
+    ex:[{n:'Cat-Cow Flow',s:1,r:'2 min',q:'Mat'},{n:"Child's Pose",s:1,r:'2 min',q:'Mat'},
+        {n:'Downward Dog',s:1,r:'2 min',q:'Mat'},{n:'Pigeon Pose',s:1,r:'3 min each',q:'Mat'},
+        {n:'Seated Fwd Fold',s:1,r:'2 min',q:'Mat'},{n:'Spinal Twist',s:1,r:'2 min each',q:'Mat'},
+        {n:'Legs Up the Wall',s:1,r:'5 min',q:'Mat'},{n:'Savasana',s:1,r:'3 min',q:'Mat'}],
+    cd:[]},
+  Fri:{l:'Full Body',e:'⚡',dur:'50 min',c:'#E8D45A',
+    wu:['Low-impact jacks 1 min','Hip circles 10','Arm swings 1 min'],
+    ex:[{n:'Goblet Squat',s:3,r:'12',q:'Dumbbell'},{n:'Dumbbell Deadlift',s:3,r:'10',q:'Dumbbells'},
+        {n:'Push-Up (knees ok)',s:3,r:'10',q:'BW'},{n:'Single Arm Row',s:3,r:'10 each',q:'Dumbbell'},
+        {n:'Shoulder Press',s:3,r:'12',q:'Dumbbells'},{n:'Reverse Lunge',s:3,r:'10 each',q:'Dumbbells'},
+        {n:'Farmer Carry',s:3,r:'30 sec',q:'Dumbbells'},{n:'Plank',s:3,r:'30 sec',q:'BW'}],
+    cd:['Full body stretch 5 min','Deep breathing 2 min']},
+  Sat:{l:'Cardio + Core',e:'🔥',dur:'45 min',c:'#5AB4E8',
+    wu:['March in place 2 min','Arm swings 1 min'],
+    ex:[{n:'Low-Impact Cardio',s:1,r:'25 min',q:'BW',nt:'March, step touches, shadow boxing'},
+        {n:'Plank Hold',s:3,r:'30 sec',q:'BW'},{n:'Dead Bug',s:3,r:'10 each',q:'BW'},
+        {n:'Bicycle Crunch',s:3,r:'15 each',q:'BW'},{n:'Bird Dog',s:3,r:'10 each',q:'BW'},
+        {n:'Glute Bridge Hold',s:3,r:'30 sec',q:'BW'}],
+    cd:["Child's pose 1 min",'Seated twist 30s each']},
+  Sun:{l:'Rest Day',e:'😴',dur:'—',c:'#666',wu:[],ex:[],cd:[],note:'Rest is growth. A gentle walk is always welcome 🚶‍♀️'},
+};
+
+// ── STATE ──
+var S={
+  data:{},        // { [date]: { day:{water,steps,stress,stressNote,sleepBed,sleepWake,sleepQuality,sleepNote,steps,wkDone,wkDay,exChecks,travelOvernight}, meds:{slot_id:bool}, routine:{type_id:bool}, dayType:'' } }
+  weights:[{date:'2025-05-05',weight:72,note:'Starting weight 🌱'}],
+  waterIdx:0,
+  tab:'dash',
+  viewDate:'',
+  calMonth:'',
+  selDay:'Mon',
+  dayType:'regular',
+  chartMetric:'weight',
+  gToken:null,
+  gFileId:null,
+};
+
+// ── UTILS ──
+function isoToday(){return new Date().toISOString().split('T')[0];}
+function fmt(iso){try{var p=iso.split('-').map(Number);return new Date(p[0],p[1]-1,p[2]).toLocaleDateString('en-GB',{day:'numeric',month:'short'});}catch(e){return iso;}}
+function fmtMY(iso){try{var p=iso.split('-').map(Number);return new Date(p[0],p[1]-1,1).toLocaleDateString('en-GB',{month:'long',year:'numeric'});}catch(e){return '';}}
+function daysIM(iso){var p=iso.split('-').map(Number);return new Date(p[0],p[1],0).getDate();}
+function fdIM(iso){var p=iso.split('-').map(Number);return(new Date(p[0],p[1]-1,1).getDay()+6)%7;}
+function last7(){return Array.from({length:7},function(_,i){var d=new Date();d.setDate(d.getDate()-(6-i));return d.toISOString().split('T')[0];});}
+function monISO(){var d=new Date();d.setDate(d.getDate()-((d.getDay()+6)%7));return d.toISOString().split('T')[0];}
+function t2m(t){if(!t)return 0;var p=t.split(':').map(Number);return p[0]*60+p[1];}
+function slpHrs(bed,wake){if(!bed||!wake)return 0;var b=bed.split(':').map(Number),w=wake.split(':').map(Number);var d=(w[0]*60+w[1])-(b[0]*60+b[1]);if(d<0)d+=1440;return Math.round((d/60)*10)/10;}
+function curBlock(blocks){
+  if(!blocks||!blocks.length)return -1;
+  var now=new Date(),cur=now.getHours()*60+now.getMinutes();
+  for(var i=0;i<blocks.length-1;i++)if(cur>=t2m(blocks[i].time)&&cur<t2m(blocks[i+1].time))return i;
+  if(cur>=t2m(blocks[blocks.length-1].time))return blocks.length-1;
+  return -1;
+}
+function gd(date){return(S.data[date]||{}).day||{};}
+function gm(date){return(S.data[date]||{}).meds||{};}
+function gr(date){return(S.data[date]||{}).routine||{};}
+function ensure(date){if(!S.data[date])S.data[date]={};return S.data[date];}
+function setDay(date,k,v){var e=ensure(date);if(!e.day)e.day={};e.day[k]=v;save();}
+function setMed(date,k,v){var e=ensure(date);if(!e.meds)e.meds={};e.meds[k]=v;save();}
+function setRtk(date,k,v){var e=ensure(date);if(!e.routine)e.routine={};e.routine[k]=v;save();}
+function setDT(date,v){ensure(date).dayType=v;save();}
+
+function score(date){
+  var d=gd(date),m=gm(date),wg=WATER_GOALS[S.waterIdx],s=0;
+  if(MEDS.every(function(sl){return sl.items.every(function(it){return m[sl.slot+'_'+it.id];});}))s++;
+  if((d.water||0)>=wg)s++;if((d.steps||0)>=STEP_GOAL)s++;if(d.stress!=null)s++;if(slpHrs(d.sleepBed,d.sleepWake)>=7)s++;
+  return s;
+}
+function streak(){
+  var wg=WATER_GOALS[S.waterIdx],streak=0,pb=0,run=0;
+  for(var i=0;i<365;i++){var d=new Date();d.setDate(d.getDate()-i);var iso=d.toISOString().split('T')[0];var sc=score(iso);if(sc>=4){run++;if(i===0||streak===run-1)streak=run;}else{pb=Math.max(pb,run);if(i>0)break;run=0;streak=0;}}
+  return{streak:streak,pb:Math.max(pb,run)};
+}
+
+// ── STORAGE ──
+var saveTimer=null;
+function save(){clearTimeout(saveTimer);saveTimer=setTimeout(doSave,600);}
+function showToast(msg,col){
+  var t=document.getElementById('toast');
+  if(!t){t=document.createElement('div');t.id='toast';t.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#1A1A25;border:1px solid #22222E;color:#F0EDE8;padding:10px 20px;border-radius:20px;font-size:12px;z-index:200;transition:opacity .4s;pointer-events:none;white-space:nowrap;';document.body.appendChild(t);}
+  t.textContent=msg;t.style.borderColor=col||'#5AE8A0';t.style.color=col||'#5AE8A0';t.style.opacity='1';
+  clearTimeout(t._t);t._t=setTimeout(function(){t.style.opacity='0';},2000);
+}
+function doSave(){
+  var d=JSON.stringify({data:S.data,weights:S.weights,waterIdx:S.waterIdx});
+  try{localStorage.setItem('crl_v1',d);showToast('✓ Saved');}catch(e){showToast('❌ Save failed','#E85A5A');}
+  if(S.gToken&&S.gFileId)gSave(d);
+  renderAll();
+}
+function load(){
+  try{
+    var raw=localStorage.getItem('crl_v1');
+    if(raw){var d=JSON.parse(raw);if(d.data)S.data=d.data;if(d.weights&&d.weights.length)S.weights=d.weights;if(d.waterIdx!=null)S.waterIdx=d.waterIdx;}
+  }catch(e){}
+  var tok=localStorage.getItem('gToken'),fid=localStorage.getItem('gFileId');
+  if(tok&&fid){S.gToken=tok;S.gFileId=fid;gLoadFile();}
+}
+function showStatus(s){showToast(s==='saved'?'✓ Saved':'❌ Error');}
+function doExport(){
+  var d={version:1,exportedAt:new Date().toISOString(),data:S.data,weights:S.weights,waterIdx:S.waterIdx};
+  var json=JSON.stringify(d,null,2);
+  if(S.gToken&&S.gFileId){
+    // Save to Google Drive as backup copy with date
+    var name='cal-backup-'+isoToday()+'.json';
+    var meta=JSON.stringify({name:name,mimeType:'application/json'});
+    var form=new FormData();
+    form.append('metadata',new Blob([meta],{type:'application/json'}));
+    form.append('file',new Blob([json],{type:'application/json'}));
+    fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',
+      {method:'POST',headers:{Authorization:'Bearer '+S.gToken},body:form})
+    .then(function(){showToast('✓ Backup saved to Google Drive');})
+    .catch(function(){downloadJSON(json);});
+  } else {
+    downloadJSON(json);
+  }
+}
+function downloadJSON(json){
+  var b=new Blob([json],{type:'application/json'});
+  var u=URL.createObjectURL(b),a=document.createElement('a');
+  a.href=u;a.download='cal-reclaiming-life-'+isoToday()+'.json';a.click();URL.revokeObjectURL(u);
+  showToast('✓ Downloaded to phone');
+}
+function doImport(e){
+  var f=e.target.files[0];if(!f)return;
+  var r=new FileReader();r.onload=function(ev){try{var d=JSON.parse(ev.target.result);if(d.data)S.data=d.data;if(d.weights&&d.weights.length)S.weights=d.weights;if(d.waterIdx!=null)S.waterIdx=d.waterIdx;doSave();}catch(err){alert('Invalid file');}};
+  r.readAsText(f);e.target.value='';
+}
+
+// ── GOOGLE DRIVE ──
+var GDFILE='cal-reclaiming-life.json';
+function gdSignIn(){
+
+  var c=google.accounts.oauth2.initTokenClient({client_id:CLIENT_ID,scope:'https://www.googleapis.com/auth/drive.file',callback:function(r){if(r.access_token){S.gToken=r.access_token;localStorage.setItem('gToken',r.access_token);gFindOrCreate();}}});
+  c.requestAccessToken();
+}
+function gdSignOut(){S.gToken=null;S.gFileId=null;localStorage.removeItem('gToken');localStorage.removeItem('gFileId');document.getElementById('gd-off').classList.remove('hidden');document.getElementById('gd-on').classList.add('hidden');}
+async function gFindOrCreate(){
+  try{
+    var r=await fetch('https://www.googleapis.com/drive/v3/files?q=name%3D%22'+GDFILE+'%22+and+trashed%3Dfalse&fields=files(id)',{headers:{Authorization:'Bearer '+S.gToken}});
+    var d=await r.json();
+    if(d.files&&d.files.length){S.gFileId=d.files[0].id;localStorage.setItem('gFileId',S.gFileId);await gLoadFile();}
+    else await gCreateFile();
+    gShowConnected();
+  }catch(e){console.error(e);}
+}
+async function gLoadFile(){
+  try{
+    var r=await fetch('https://www.googleapis.com/drive/v3/files/'+S.gFileId+'?alt=media',{headers:{Authorization:'Bearer '+S.gToken}});
+    var d=await r.json();
+    if(d.data)S.data=d.data;if(d.weights&&d.weights.length)S.weights=d.weights;if(d.waterIdx!=null)S.waterIdx=d.waterIdx;
+    renderAll();document.getElementById('gd-sync').textContent='Loaded: '+new Date().toLocaleTimeString();
+  }catch(e){console.error(e);}
+}
+async function gCreateFile(){
+  var data=JSON.stringify({version:1,data:S.data,weights:S.weights,waterIdx:S.waterIdx});
+  var meta=JSON.stringify({name:GDFILE,mimeType:'application/json'});
+  var form=new FormData();form.append('metadata',new Blob([meta],{type:'application/json'}));form.append('file',new Blob([data],{type:'application/json'}));
+  var r=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',{method:'POST',headers:{Authorization:'Bearer '+S.gToken},body:form});
+  var f=await r.json();S.gFileId=f.id;localStorage.setItem('gFileId',S.gFileId);
+}
+async function gSave(data){
+  if(!S.gToken||!S.gFileId)return;
+  try{
+    await fetch('https://www.googleapis.com/upload/drive/v3/files/'+S.gFileId+'?uploadType=media',{method:'PATCH',headers:{Authorization:'Bearer '+S.gToken,'Content-Type':'application/json'},body:data});
+    document.getElementById('gd-sync').textContent='Synced: '+new Date().toLocaleTimeString();
+    showToast('☁️ Synced to Google Drive');
+  }catch(e){console.error(e);}
+}
+function gShowConnected(){document.getElementById('gd-off').classList.add('hidden');document.getElementById('gd-on').classList.remove('hidden');document.getElementById('gd-file').textContent='File: '+GDFILE;}
+
+// ── TABS ──
+var TTITLES={dash:"Dashboard",wkt:"Workout + Steps",body:"Body & Water",meds:"Meds",mood:"Stress & Mood",sleep:"Sleep Tracker"};
+var TCOLORS={dash:'#E8845A',wkt:'#E8845A',body:'#E85A8A',meds:'#A55AE8',mood:'#5AE8A0',sleep:'#8A7AE8'};
+function goTab(t){
+  // Show past day banner on all tabs
+  var isT=S.viewDate===isoToday();
+  var banner=document.getElementById('past-banner');
+  if(!banner){banner=document.createElement('div');banner.id='past-banner';banner.style.cssText='background:rgba(232,132,90,.15);border-bottom:1px solid rgba(232,132,90,.3);padding:8px 16px;text-align:center;font-size:11px;color:#E8845A;cursor:pointer;';banner.onclick=function(){setView(isoToday());};document.getElementById('header').after(banner);}
+  if(isT){banner.style.display='none';}else{banner.style.display='block';banner.textContent='📅 Editing '+fmt(S.viewDate)+' — tap to return to today';}
+
+  document.querySelectorAll('.tab').forEach(function(e){e.classList.remove('active');});
+  document.getElementById('t-'+t).classList.add('active');
+  document.querySelectorAll('.nb').forEach(function(e){var on=e.getAttribute('onclick')==="goTab('"+t+"')";e.classList.toggle('on',on);e.style.color=on?TCOLORS[t]:'#444';e.style.borderTopColor=on?TCOLORS[t]:'transparent';});
+  document.getElementById('htitle').textContent=TTITLES[t];
+  S.tab=t;
+  if(t==='wkt')renderWkt();if(t==='body')renderBody();if(t==='meds')renderMeds();if(t==='mood')renderMood();if(t==='sleep')renderSleep();
+}
+
+// ── DATE NAV ──
+function shiftView(n){var d=new Date(S.viewDate+'T12:00:00');d.setDate(d.getDate()+n);var neo=d.toISOString().split('T')[0];if(neo>isoToday())return;setView(neo);}
+function setView(iso){
+  S.viewDate=iso;var isT=iso===isoToday();
+  document.getElementById('vdate-lbl').textContent=isT?'Today ✦':fmt(iso);
+  document.getElementById('vdate-lbl').style.color=isT?'var(--acc)':'var(--txt)';
+  document.getElementById('today-btn').classList.toggle('hidden',isT);
+  document.getElementById('next-btn').style.color=isT?'#333':'var(--txt)';
+  var saved=(S.data[iso]||{}).dayType;
+  if(saved)S.dayType=saved;
+  else{var dow=new Date(iso+'T12:00:00').getDay();S.dayType=dow===6?'saturday':dow===0?'sunday':'regular';}
+  renderDash();
+}
+function shiftCal(n){var d=new Date(S.calMonth);d.setMonth(d.getMonth()+n);S.calMonth=d.toISOString().split('T')[0].slice(0,8)+'01';renderCal();}
+
+// ── SPARK LINE ──
+function spark(id,pts,col,goal){
+  var el=document.getElementById(id);if(!el)return;
+  var empty=document.getElementById('chart-empty');
+  if(pts.length<2){el.innerHTML='';if(id==='tchart'){el.style.display='none';if(empty)empty.classList.remove('hidden');}return;}
+  if(id==='tchart'){el.style.display='block';if(empty)empty.classList.add('hidden');}
+  var W=300,H=parseInt(el.getAttribute('height')||70,10),P=10;
+  var vals=pts.map(function(p){return p.v;});
+  var all=goal!=null?vals.concat([goal]):vals;
+  var mn=Math.min.apply(null,all)-1,mx=Math.max.apply(null,all)+1;
+  var tx=function(i){return P+(i/(pts.length-1))*(W-P*2);};
+  var ty=function(v){return P+((mx-v)/(mx-mn))*(H-P*2);};
+  var pstr=pts.map(function(p,i){return tx(i)+','+ty(p.v);}).join(' ');
+  var gid='g'+col.replace('#','');
+  var h='<defs><linearGradient id="'+gid+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="'+col+'" stop-opacity="0.25"/><stop offset="100%" stop-color="'+col+'" stop-opacity="0"/></linearGradient></defs>';
+  if(goal!=null)h+='<line x1="'+P+'" y1="'+ty(goal)+'" x2="'+(W-P)+'" y2="'+ty(goal)+'" stroke="'+col+'" stroke-width="1" stroke-dasharray="4,3" opacity="0.4"/>';
+  h+='<polygon points="'+tx(0)+','+H+' '+pstr+' '+tx(pts.length-1)+','+H+'" fill="url(#'+gid+')"/>';
+  h+='<polyline points="'+pstr+'" fill="none" stroke="'+col+'" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
+  pts.forEach(function(p,i){h+='<circle cx="'+tx(i)+'" cy="'+ty(p.v)+'" r="3" fill="'+col+'" stroke="#1A1A25" stroke-width="2"/>';});
+  el.innerHTML=h;
+}
+
+// ── RING HTML ──
+function ring(pct,col,size,stroke,inner){
+  var r=(size-stroke*2)/2,c=2*Math.PI*r,off=c*(1-Math.min(1,Math.max(0,pct||0)));
+  return '<div style="position:relative;width:'+size+'px;height:'+size+'px;flex-shrink:0;">'+
+    '<svg width="'+size+'" height="'+size+'" style="transform:rotate(-90deg);display:block;">'+
+    '<circle cx="'+(size/2)+'" cy="'+(size/2)+'" r="'+r+'" fill="none" stroke="#22222E" stroke-width="'+stroke+'"/>'+
+    '<circle cx="'+(size/2)+'" cy="'+(size/2)+'" r="'+r+'" fill="none" stroke="'+col+'" stroke-width="'+stroke+'" stroke-dasharray="'+c+'" stroke-dashoffset="'+off+'" stroke-linecap="round" style="transition:stroke-dashoffset .5s;"/>'+
+    '</svg><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">'+inner+'</div></div>';
+}
+
+// ── DASHBOARD ──
+function renderDash(){
+  renderHeader();renderDtype();renderRoutine();renderRings();renderWeekStrip();renderCal();renderTrend();renderPBs();
+}
+function renderHeader(){
+  var lw=S.weights.length?S.weights[S.weights.length-1].weight:START_W;
+  document.getElementById('hweight').textContent=lw+' kg';
+  var st=streak();
+  document.getElementById('streak-txt').textContent=st.streak+' day streak';
+  document.getElementById('streak-txt').style.color=st.streak>0?'#E8845A':'#666';
+  document.getElementById('streak-pill').style.borderColor=st.streak>0?'#E8845A':'var(--bdr)';
+  document.getElementById('streak-pill').style.background=st.streak>0?'rgba(232,132,90,.15)':'var(--bdr)';
+}
+function renderDtype(){
+  document.getElementById('dtype-sel').innerHTML=Object.keys(ROUTINES).map(function(k){
+    var r=ROUTINES[k],sel=S.dayType===k,col=k==='travel'?'#E85A5A':'#E8845A';
+    return '<button onclick="selDtype(\''+k+'\')" style="flex:1;padding:8px 2px;border-radius:10px;background:'+(sel?col+'22':'#1A1A25')+';border:1px solid '+(sel?col:'#22222E')+';color:'+(sel?col:'#555')+';text-align:center;">'+
+      '<p style="font-size:14px;margin-bottom:2px;">'+r.emoji+'</p><p style="font-size:7px;">'+r.label.toUpperCase()+'</p></button>';
+  }).join('');
+}
+function selDtype(t){S.dayType=t;setDT(S.viewDate,t);renderDash();}
+function setOvernight(v){setDay(S.viewDate,'travelOvernight',v);renderDash();}
+
+function renderRoutine(){
+  var isT=S.dayType==='travel';
+  document.getElementById('travel-card').classList.toggle('hidden',!isT);
+  document.getElementById('routine-card').classList.toggle('hidden',isT);
+  if(isT){
+    var ov=gd(S.viewDate).travelOvernight||'';
+    ['yes','no'].forEach(function(v){
+      var sel=ov===(v==='yes'?'Yes':'No');
+      var el=document.getElementById('t-'+v);
+      el.style.background=sel?'#E85A5A22':'var(--surf)';el.style.borderColor=sel?'#E85A5A':'var(--bdr)';el.style.color=sel?'#E85A5A':'#555';
+    });
+    return;
+  }
+  var blocks=ROUTINES[S.dayType]?ROUTINES[S.dayType].blocks:[];
+  var checks=gr(S.viewDate),cidx=S.viewDate===isoToday()?curBlock(blocks):-1;
+  var done=blocks.filter(function(b){return checks[S.dayType+'_'+b.id];}).length,total=blocks.length;
+  var pct=total?Math.round((done/total)*100):0;
+  document.getElementById('rprog').textContent=done+'/'+total+' done';
+  document.getElementById('rbar').style.width=pct+'%';
+  document.getElementById('rpct').textContent=pct+'%';
+  document.getElementById('rblocks').innerHTML=blocks.map(function(b,i){
+    var key=S.dayType+'_'+b.id,checked=!!checks[key],isCur=i===cidx,isPast=cidx>i;
+    return '<div class="rblock" onclick="togRtk(\''+key+'\')" style="background:'+(isCur?b.color+'22':checked?b.color+'0C':'transparent')+';border-color:'+(isCur?b.color:checked?b.color+'44':'var(--bdr)')+';opacity:'+(isPast&&!checked?.5:1)+';">'+
+      '<div class="chk" style="border-color:'+(checked?b.color:isCur?b.color:'#333')+';background:'+(checked?b.color:'transparent')+';">'+(checked?'<span style="color:#0E0E12">✓</span>':'')+'</div>'+
+      '<span style="font-size:16px;flex-shrink:0;">'+b.emoji+'</span>'+
+      '<div style="flex:1;min-width:0;"><p style="font-size:12px;color:'+(checked?'#555':isCur?b.color:'#F0EDE8')+';text-decoration:'+(checked?'line-through':'none')+';margin-bottom:1px;">'+b.label+'</p>'+
+      '<p style="font-size:9px;color:#555;">'+b.time+' · '+b.dur+'</p></div>'+
+      (isCur&&!checked?'<span style="font-size:8px;color:'+b.color+';background:'+b.color+'22;padding:2px 6px;border-radius:10px;flex-shrink:0;">NOW</span>':'')+
+    '</div>';
+  }).join('');
+}
+function togRtk(key){var r=gr(S.viewDate);setRtk(S.viewDate,key,!r[key]);renderDash();}
+
+function renderRings(){
+  var d=gd(S.viewDate),m=gm(S.viewDate),wg=WATER_GOALS[S.waterIdx];
+  var md=MEDS.reduce(function(a,sl){return a+sl.items.filter(function(it){return m[sl.slot+'_'+it.id];}).length;},0);
+  var wp=Math.min(100,Math.round(((d.water||0)/wg)*100));
+  var sp=Math.min(100,Math.round(((d.steps||0)/STEP_GOAL)*100));
+  var sh=slpHrs(d.sleepBed,d.sleepWake);
+  var Rs=[
+    {e:'💊',c:'#A55AE8',p:md/TOTAL_MEDS,l:'Meds',s:md+'/'+TOTAL_MEDS},
+    {e:'💧',c:'#5AB4E8',p:wp/100,l:'Water',s:((d.water||0)/1000).toFixed(1)+'L'},
+    {e:'👟',c:'#E8D45A',p:sp/100,l:'Steps',s:(d.steps||0).toLocaleString()},
+    {e:'🧘',c:'#5AE8A0',p:d.stress!=null?1:0,l:'Stress',s:d.stress!=null?STRESS[d.stress-1].e+' '+d.stress+'/10':'—'},
+    {e:'😴',c:'#8A7AE8',p:Math.min(1,sh/8),l:'Sleep',s:sh?sh+'h':'—'},
+  ];
+  document.getElementById('rings').innerHTML=Rs.map(function(r){
+    return '<div style="text-align:center;">'+ring(r.p,r.c,50,5,'<span style="font-size:14px;">'+r.e+'</span>')+
+      '<p style="font-size:9px;color:'+(r.p>=1?r.c:'#555')+';margin-top:4px;margin-bottom:1px;">'+r.l+'</p>'+
+      '<p style="font-size:9px;color:'+(r.p>=1?'#F0EDE8':'#444')+';">'+r.s+'</p></div>';
+  }).join('');
+  document.getElementById('hmini').innerHTML=Rs.map(function(r){
+    return '<div style="width:20px;height:20px;border-radius:10px;background:'+(r.p>=1?r.c+'33':'#22222E')+';border:1px solid '+(r.p>=1?r.c:'#22222E')+';display:flex;align-items:center;justify-content:center;font-size:10px;">'+r.e+'</div>';
+  }).join('');
+  var sc=score(S.viewDate);
+  document.getElementById('sbar').style.width=((sc/5)*100)+'%';
+  document.getElementById('smsg').textContent=['No activity yet 💤','Good start! 1 ring 🌱','2 rings — building 🌿','3 rings — halfway 🔥','4 rings — almost! ⭐','🎉 Perfect day! All 5!'][sc]||'';
+}
+
+function renderWeekStrip(){
+  var wg=WATER_GOALS[S.waterIdx];
+  var BG=['#1A1A2588','#E845452a','#E8D45A33','#E8D45A44','#5AB4E855','#5AE8A066'];
+  var BD=['transparent','#E84545','#E8D45A','#E8D45A','#5AB4E8','#5AE8A0'];
+  document.getElementById('wstrip').innerHTML=last7().map(function(iso){
+    var sc=score(iso),isT=iso===isoToday();
+    var dl=new Date(iso+'T12:00:00').toLocaleDateString('en-GB',{weekday:'short'}).slice(0,1);
+    var dt=(S.data[iso]||{}).dayType;
+    var dte=dt==='travel'?'🚂':dt==='saturday'?'✨':dt==='sunday'?'🌿':'';
+    var icon=sc===5?'⭐':sc===4?'④':sc===3?'③':sc===2?'②':sc===1?'①':'·';
+    return '<div style="flex:1;text-align:center;">'+
+      '<div style="border-radius:8px;background:'+(BG[sc]||BG[0])+';border:1px solid '+(isT?'#E8845A':(BD[sc]||'transparent'))+';padding:7px 0;margin-bottom:3px;">'+
+      '<p style="font-size:12px;">'+icon+'</p><p style="font-size:8px;color:'+(sc>0?'#5AE8A0':'#444')+';margin-top:1px;">'+sc+'/5</p></div>'+
+      '<p style="font-size:8px;color:'+(isT?'#E8845A':'#555')+';">'+dl+'</p>'+(dte?'<p style="font-size:9px;margin-top:1px;">'+dte+'</p>':'')+
+    '</div>';
+  }).join('');
+}
+
+function renderCal(){
+  document.getElementById('cal-lbl').textContent=fmtMY(S.calMonth);
+  var wg=WATER_GOALS[S.waterIdx],today=isoToday();
+  var p=S.calMonth.split('-').map(Number),dim=daysIM(S.calMonth),fd=fdIM(S.calMonth);
+  var BG=['#1A1A2588','#E845452a','#E8D45A33','#E8D45A44','#5AB4E855','#5AE8A066'];
+  var BD=['transparent','#E84545','#E8D45A','#E8D45A','#5AB4E8','#5AE8A0'];
+  var h='<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:4px;">';
+  ['M','T','W','T','F','S','S'].forEach(function(d){h+='<p style="text-align:center;font-size:8px;color:#555;">'+d+'</p>';});
+  h+='</div><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;">';
+  for(var i=0;i<fd;i++)h+='<div></div>';
+  for(var day=1;day<=dim;day++){
+    var dd=String(day).padStart(2,'0'),mm=String(p[1]).padStart(2,'0'),yy=String(p[0]).padStart(4,'0');
+    var iso=yy+'-'+mm+'-'+dd,future=iso>today,isT=iso===today;
+    var sc=future?-1:score(iso);
+    h+='<div onclick="'+(future?'':'setView(\''+iso+'\')')+'" style="aspect-ratio:1;border-radius:6px;background:'+(sc>=0?BG[sc]:'#1A1A2588')+';border:1px solid '+(isT?'#E8845A':sc>=0?(BD[sc]||'transparent'):'transparent')+';display:flex;align-items:center;justify-content:center;cursor:'+(future?'default':'pointer')+';">'+
+      '<span style="font-size:9px;color:'+(isT?'#E8845A':sc===5?'#5AE8A0':sc>=0?'#aaa':'#333')+';">'+day+'</span></div>';
+  }
+  h+='</div><div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">';
+  [{sc:5,l:'Perfect'},{sc:4,l:'Great'},{sc:3,l:'Good'},{sc:2,l:'Partial'},{sc:1,l:'Started'},{sc:0,l:'Rest'}].forEach(function(x){
+    h+='<div style="display:flex;align-items:center;gap:3px;"><div style="width:7px;height:7px;border-radius:2px;background:'+(BG[x.sc]||BG[0])+';border:1px solid '+(BD[x.sc]||'transparent')+'"></div><span style="font-size:8px;color:#555;">'+x.l+'</span></div>';
+  });
+  h+='</div>';
+  document.getElementById('calgrid').innerHTML=h;
+}
+
+var chartMetric='weight';
+function setMetric(m){
+  chartMetric=m;
+  document.querySelectorAll('#chart-btns button').forEach(function(b){
+    var cols={weight:'#E85A8A',water:'#5AB4E8',steps:'#E8D45A',stress:'#5AE8A0'};
+    var on=b.getAttribute('data-m')===m;
+    b.style.background=on?cols[m]+'33':'transparent';b.style.borderColor=on?cols[m]:'#22222E';b.style.color=on?cols[m]:'#555';
+  });
+  renderTrend();
+}
+function renderTrend(){
+  var cols={weight:'#E85A8A',water:'#5AB4E8',steps:'#E8D45A',stress:'#5AE8A0'};
+  var goals={weight:TARGET_W,water:WATER_GOALS[S.waterIdx]/1000,steps:STEP_GOAL};
+  var pts=[];
+  if(chartMetric==='weight')pts=S.weights.slice(-20).map(function(w){return{v:w.weight};});
+  else{
+    var days=Array.from({length:30},function(_,i){var d=new Date();d.setDate(d.getDate()-(29-i));return d.toISOString().split('T')[0];});
+    if(chartMetric==='water')pts=days.map(function(d){return{v:Math.round(((gd(d).water||0)/1000)*10)/10};});
+    else if(chartMetric==='steps')pts=days.map(function(d){return{v:gd(d).steps||0};});
+    else pts=days.filter(function(d){return gd(d).stress!=null;}).map(function(d){return{v:gd(d).stress};});
+  }
+  spark('tchart',pts,cols[chartMetric],goals[chartMetric]);
+}
+function renderPBs(){
+  var allS=Object.values(S.data).map(function(d){return d&&d.day&&d.day.steps||0;});
+  var allW=Object.values(S.data).map(function(d){return d&&d.day&&d.day.water||0;});
+  var lw=S.weights.length?S.weights[S.weights.length-1].weight:START_W;
+  var lost=+(START_W-lw).toFixed(1);var st=streak();
+  document.getElementById('pbs').innerHTML=[
+    {l:'🔥 Best Streak',v:st.pb+' days',c:'#E8845A'},
+    {l:'⚖️ Lost',v:lost>0?lost+' kg':'Just starting',c:'#E85A8A'},
+    {l:'👟 Best Steps',v:Math.max(0,...allS).toLocaleString(),c:'#E8D45A'},
+    {l:'💧 Best Water',v:Math.round(Math.max(0,...allW)/100)/10+'L',c:'#5AB4E8'},
+  ].map(function(p){return '<div style="background:var(--surf);border-radius:10px;padding:11px 12px;border:1px solid var(--bdr);">'+
+    '<p style="font-size:8px;color:#555;margin-bottom:3px;">'+p.l+'</p><p style="font-size:17px;color:'+p.c+';">'+p.v+'</p></div>';}).join('');
+}
+
+// ── WORKOUT ──
+var selDay=DAYS[new Date().getDay()===0?6:new Date().getDay()-1];
+function renderWkt(){
+  var today=S.viewDate,d=gd(today);
+  document.getElementById('dsel').innerHTML=DAYS.map(function(day){
+    var w=WORKOUTS[day],sel=selDay===day,done=d.wkDone&&d.wkDay===day;
+    return '<button onclick="selWDay(\''+day+'\')" style="flex-shrink:0;padding:7px 10px;border-radius:9px;min-width:46px;background:'+(sel?w.c:'#1A1A25')+';border:1px solid '+(sel?w.c:'#22222E')+';color:'+(sel?'#0E0E12':done?w.c:'#666')+';text-align:center;">'+
+      '<p style="font-size:13px;margin-bottom:1px;">'+(done&&!sel?'✅':w.e)+'</p><p style="font-size:8px;">'+day.toUpperCase()+'</p></button>';
+  }).join('');
+  var w=WORKOUTS[selDay],exC=d.exChecks||{},wkD=d.wkDone&&d.wkDay===selDay;
+  var h='';
+  if(selDay==='Sun'){h='<div style="text-align:center;padding:40px 0;"><p style="font-size:50px;margin-bottom:10px;">😴</p><h2 style="font-family:\'Playfair Display\',serif;font-size:20px;margin-bottom:8px;">Rest Day</h2><p style="color:#666;font-size:13px;line-height:1.7;">Your muscles grow during rest.<br>A gentle walk is always welcome 🚶‍♀️</p></div>';}
+  else{
+    h='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">'+
+      '<div><p style="font-size:9px;color:'+w.c+';letter-spacing:2px;text-transform:uppercase;margin-bottom:3px;">'+selDay+' · '+w.dur+'</p>'+
+      '<h2 style="font-family:\'Playfair Display\',serif;font-size:20px;">'+w.l+' '+w.e+'</h2></div>'+
+      '<button onclick="markDone()" style="padding:7px 11px;border-radius:8px;border:1px solid '+(wkD?w.c:'#22222E')+';background:'+(wkD?w.c+'22':'transparent')+';color:'+(wkD?w.c:'#555')+';font-size:9px;">'+(wkD?'✓ DONE':'MARK DONE')+'</button></div>';
+    if(w.note)h+='<div style="margin-bottom:12px;padding:8px 12px;background:'+w.c+'14;border-left:3px solid '+w.c+';border-radius:0 8px 8px 0;"><p style="font-size:11px;color:'+w.c+';line-height:1.5;">'+w.note+'</p></div>';
+    if(w.wu&&w.wu.length){
+      h+='<p style="font-size:9px;letter-spacing:2px;color:#555;text-transform:uppercase;margin-bottom:7px;">Warm Up</p>'+
+        '<div style="background:var(--card);border-radius:10px;overflow:hidden;margin-bottom:12px;">'+
+        w.wu.map(function(it,i){return '<div style="padding:9px 13px;border-bottom:'+(i<w.wu.length-1?'1px solid #22222E':'none')+';font-size:12px;color:#888;display:flex;gap:8px;"><span style="color:#E8845A;font-size:8px;">→</span>'+it+'</div>';}).join('')+'</div>';
+    }
+    h+='<p style="font-size:9px;letter-spacing:2px;color:#555;text-transform:uppercase;margin-bottom:7px;">Exercises</p>'+
+      '<div style="background:var(--card);border-radius:10px;overflow:hidden;margin-bottom:12px;">'+
+      w.ex.map(function(ex,i){
+        var k=selDay+'_'+i,ck=!!exC[k];
+        return '<div onclick="togEx(\''+k+'\','+i+')" style="padding:11px 13px;border-bottom:'+(i<w.ex.length-1?'1px solid #22222E':'none')+';display:flex;align-items:center;gap:11px;background:'+(ck?w.c+'0C':'transparent')+';cursor:pointer;">'+
+          '<div style="width:18px;height:18px;border-radius:5px;flex-shrink:0;border:2px solid '+(ck?w.c:'#2E2E40')+';background:'+(ck?w.c:'transparent')+';display:flex;align-items:center;justify-content:center;font-size:10px;color:#0E0E12;">'+(ck?'✓':'')+'</div>'+
+          '<div style="flex:1;"><p style="font-size:13px;color:'+(ck?'#555':'#F0EDE8')+';text-decoration:'+(ck?'line-through':'none')+';margin-bottom:2px;">'+ex.n+'</p>'+
+          '<p style="font-size:10px;color:#444;">'+(ex.s>1?ex.s+' × ':' × ')+ex.r+' · '+ex.q+'</p>'+(ex.nt?'<p style="font-size:10px;color:'+w.c+';margin-top:2px;opacity:.8;">'+ex.nt+'</p>':'')+
+          '</div></div>';
+      }).join('')+'</div>';
+    if(w.cd&&w.cd.length){
+      h+='<p style="font-size:9px;letter-spacing:2px;color:#555;text-transform:uppercase;margin-bottom:7px;">Cool Down</p>'+
+        '<div style="background:var(--card);border-radius:10px;overflow:hidden;margin-bottom:12px;">'+
+        w.cd.map(function(it,i){return '<div style="padding:9px 13px;border-bottom:'+(i<w.cd.length-1?'1px solid #22222E':'none')+';font-size:12px;color:#888;display:flex;gap:8px;"><span style="color:#5AE8A0;font-size:8px;">→</span>'+it+'</div>';}).join('')+'</div>';
+    }
+  }
+  document.getElementById('wcontent').innerHTML=h;
+  renderSteps();
+}
+function selWDay(d){selDay=d;renderWkt();}
+function togEx(k,i){
+  var d=gd(S.viewDate),ec=Object.assign({},d.exChecks||{});ec[k]=!ec[k];
+  var tot=WORKOUTS[selDay].ex.length,done=WORKOUTS[selDay].ex.filter(function(_,j){return ec[selDay+'_'+j];}).length;
+  setDay(S.viewDate,'exChecks',ec);if(done===tot){setDay(S.viewDate,'wkDone',true);setDay(S.viewDate,'wkDay',selDay);}
+  renderWkt();
+}
+function markDone(){var d=gd(S.viewDate);setDay(S.viewDate,'wkDone',!d.wkDone);setDay(S.viewDate,'wkDay',selDay);renderWkt();}
+
+// ── STEPS ──
+function renderSteps(){
+  var today=isoToday(),steps=gd(today).steps||0;
+  var pct=Math.min(100,Math.round((steps/STEP_GOAL)*100));
+  var r=document.getElementById('sring');
+  if(r){r.setAttribute('stroke-dashoffset',182*(1-pct/100));r.setAttribute('stroke',pct>=100?'#5AE8A0':'#E8D45A');}
+  var el=document.getElementById('spct');if(el)el.textContent=pct+'%';
+  el=document.getElementById('sdisp');if(el){el.textContent=steps.toLocaleString();el.style.color=pct>=100?'#5AE8A0':'#E8D45A';}
+  el=document.getElementById('srem');if(el)el.textContent=steps>=STEP_GOAL?'🎉 Goal reached!':steps>0?(STEP_GOAL-steps).toLocaleString()+' to go':'';
+  var sc=document.getElementById('schart');if(!sc)return;
+  var days=last7(),maxS=Math.max(STEP_GOAL,...days.map(function(d){return gd(d).steps||0;}),1);
+  sc.innerHTML=days.map(function(d){
+    var s=gd(d).steps||0,h=Math.max(3,Math.round((s/maxS)*74)),gH=Math.round((STEP_GOAL/maxS)*74),isT=d===today;
+    var bc=isT?'#E8D45A':s>=STEP_GOAL?'#5AE8A099':'#2A2A38';
+    var l=new Date(d+'T12:00:00').toLocaleDateString('en-GB',{weekday:'short'}).slice(0,1);
+    return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;">'+
+      '<p style="font-size:7px;color:'+(s>=STEP_GOAL?'#5AE8A0':s>0?'#E8D45A':'#333')+';">'+(s>0?Math.round(s/100)/10+'k':'')+'</p>'+
+      '<div style="width:100%;height:74px;position:relative;display:flex;align-items:flex-end;">'+
+      '<div style="position:absolute;bottom:'+gH+'px;left:0;right:0;border-top:1px dashed #E8D45A44;"></div>'+
+      '<div style="width:100%;height:'+h+'px;border-radius:3px 3px 0 0;background:'+bc+';transition:height .4s;"></div></div>'+
+      '<p style="font-size:8px;color:'+(isT?'#E8D45A':'#555')+';">'+l+'</p></div>';
+  }).join('');
+}
+function logSteps(){
+  var v=parseInt(document.getElementById('sinput').value,10);if(isNaN(v)||v<0)return;
+  setDay(S.viewDate,'steps',v);document.getElementById('sinput').value='';
+  renderSteps();renderDash();
+}
+
+// ── BODY ──
+function renderBody(){
+  var lw=S.weights.length?S.weights[S.weights.length-1].weight:START_W;
+  var lost=+(START_W-lw).toFixed(1),rem=+(lw-TARGET_W).toFixed(1);
+  document.getElementById('wstats').innerHTML=[
+    {l:'Start',v:START_W+' kg',c:'#555'},{l:'Lost',v:lost>0?'↓ '+lost+' kg':'—',c:lost>0?'#5AE8A0':'#555'},{l:'To Go',v:(rem>0?rem:0)+' kg',c:'#E85A8A'},
+  ].map(function(s){return '<div class="card" style="text-align:center;margin-bottom:0;padding:12px 10px;">'+
+    '<p style="font-size:8px;color:#555;letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;">'+s.l+'</p>'+
+    '<p style="font-size:16px;color:'+s.c+';font-weight:500;">'+s.v+'</p></div>';}).join('');
+  if(S.weights.length>=2)spark('wchart',S.weights.map(function(w){return{v:w.weight};}), '#E85A8A',TARGET_W);
+  document.getElementById('whist').innerHTML=[...S.weights].reverse().map(function(e,i,arr){
+    var prev=arr[i+1],diff=prev?+(e.weight-prev.weight).toFixed(1):null,isSt=e.date==='2025-05-05';
+    return '<div style="padding:11px 13px;border-bottom:'+(i<arr.length-1?'1px solid #22222E':'none')+';display:flex;align-items:center;gap:10px;">'+
+      '<div style="flex:1;"><div style="display:flex;gap:8px;align-items:center;margin-bottom:2px;">'+
+      '<span style="font-size:14px;font-weight:500;">'+e.weight+' kg</span>'+
+      (diff!==null?'<span style="font-size:11px;color:'+(diff<0?'#5AE8A0':diff>0?'#E85A5A':'#555')+';">'+(diff<0?'↓'+Math.abs(diff):diff>0?'↑'+diff:'→0')+'</span>':'')+
+      (isSt?'<span style="font-size:8px;color:#555;background:#22222E;padding:2px 5px;border-radius:4px;">START</span>':'')+
+      '</div><p style="font-size:10px;color:#555;">'+fmt(e.date)+'</p>'+(e.note?'<p style="font-size:11px;color:#777;margin-top:2px;">'+e.note+'</p>':'')+
+      '</div>'+(!isSt?'<button onclick="delW(\''+e.date+'\')" style="color:#333;font-size:15px;padding:4px 6px;">×</button>':'')+
+    '</div>';
+  }).join('');
+  renderWater();
+}
+function logWeight(){
+  var w=parseFloat(document.getElementById('winput').value);if(isNaN(w)||w<30||w>250)return;
+  var entry={date:monISO(),weight:w,note:document.getElementById('wnote').value.trim()};
+  S.weights=[...S.weights.filter(function(e){return e.date!==entry.date;}),entry].sort(function(a,b){return a.date.localeCompare(b.date);});
+  document.getElementById('winput').value='';document.getElementById('wnote').value='';
+  save();renderBody();renderHeader();
+}
+function delW(date){S.weights=S.weights.filter(function(e){return e.date!==date;});save();renderBody();}
+
+// ── WATER ──
+function renderWater(){
+  var wg=WATER_GOALS[S.waterIdx],water=gd(S.viewDate).water||0,pct=Math.min(100,Math.round((water/wg)*100));
+  document.getElementById('wstage').innerHTML=WATER_GOALS.map(function(g,i){
+    var sel=S.waterIdx===i;
+    return '<button onclick="setWS('+i+')" style="flex:1;padding:8px 4px;border-radius:9px;background:'+(sel?'rgba(90,180,232,.2)':'var(--surf)')+';border:1px solid '+(sel?'#5AB4E8':'#22222E')+';color:'+(sel?'#5AB4E8':'#555')+';text-align:center;">'+
+      '<p style="font-size:7px;margin-bottom:2px;">'+WATER_LBL[i]+'</p><p style="font-size:14px;font-weight:500;">'+(g/1000)+'L</p></button>';
+  }).join('');
+  var off=170*(1-pct/100);
+  var r=document.getElementById('wring');if(r){r.setAttribute('stroke-dashoffset',off);r.setAttribute('stroke',pct>=100?'#5AE8A0':'#5AB4E8');}
+  var pl=document.getElementById('wpct');if(pl)pl.textContent=pct+'%';
+  var wd=document.getElementById('wdisp');if(wd)wd.innerHTML=water+' <span style="font-size:11px;color:#555;">ml</span>';
+  var wr=document.getElementById('wrem');if(wr)wr.textContent=pct>=100?'🎉 Goal reached!':(wg-water)+' ml to go';
+}
+function addWater(ml){var d=gd(S.viewDate);setDay(S.viewDate,'water',Math.min((d.water||0)+ml,5000));renderWater();renderDash();}
+function addCustomWater(){var ml=parseInt(document.getElementById('wcustom').value,10);if(!isNaN(ml)&&ml>0){addWater(ml);document.getElementById('wcustom').value='';}}
+function resetWater(){setDay(S.viewDate,'water',0);renderWater();}
+function setWS(i){S.waterIdx=i;save();renderWater();}
+
+// ── MEDS ──
+function renderMeds(){
+  var today=S.viewDate,m=gm(today);
+  var done=MEDS.reduce(function(a,s){return a+s.items.filter(function(i){return m[s.slot+'_'+i.id];}).length;},0);
+  document.getElementById('mcount').innerHTML=done+'<span style="font-size:11px;color:#555;">/'+TOTAL_MEDS+'</span>';
+  var st=streak();document.getElementById('mstreak').innerHTML=st.streak+'<span style="font-size:11px;color:#555;"> days</span>';
+  document.getElementById('mslots').innerHTML=MEDS.map(function(slot){
+    var cnt=slot.items.filter(function(i){return m[slot.slot+'_'+i.id];}).length,done=cnt===slot.items.length;
+    return '<div style="margin-bottom:12px;">'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;">'+
+      '<div style="display:flex;align-items:center;gap:8px;"><span style="font-size:15px;">'+slot.emoji+'</span>'+
+      '<div><p style="font-size:11px;color:'+slot.color+';">'+slot.label+'</p><p style="font-size:9px;color:#555;">'+slot.time+'</p></div></div>'+
+      '<span style="font-size:9px;color:'+(done?'#5AE8A0':'#555')+';background:'+(done?'rgba(90,232,160,.15)':'#22222E')+';padding:3px 8px;border-radius:6px;border:1px solid '+(done?'#5AE8A0':'#22222E')+';">'+(done?'✓ Done':cnt+'/'+slot.items.length)+'</span></div>'+
+      '<div style="background:var(--card);border-radius:10px;overflow:hidden;">'+
+      slot.items.map(function(med,i){
+        var key=slot.slot+'_'+med.id,ck=!!m[key];
+        return '<div onclick="togMed(\''+slot.slot+'\',\''+med.id+'\')" class="row" style="border-bottom:'+(i<slot.items.length-1?'1px solid #22222E':'none')+';background:'+(ck?slot.color+'0C':'transparent')+';">'+
+          '<div class="chk" style="width:20px;height:20px;border-radius:10px;border:2px solid '+(ck?slot.color:'#2E2E40')+';background:'+(ck?slot.color:'transparent')+';flex-shrink:0;">'+(ck?'<span style="font-size:10px;color:#0E0E12">✓</span>':'')+'</div>'+
+          '<div style="flex:1;"><p style="font-size:13px;color:'+(ck?'#555':'#F0EDE8')+';text-decoration:'+(ck?'line-through':'none')+';margin-bottom:2px;">'+med.n+'</p>'+
+          '<p style="font-size:10px;color:#555;">'+med.d+'</p></div><span style="font-size:16px;">'+(ck?'✅':'💊')+'</span></div>';
+      }).join('')+'</div></div>';
+  }).join('');
+  document.getElementById('mhist').innerHTML=last7().map(function(iso){
+    var mm=gm(iso),c=MEDS.reduce(function(a,s){return a+s.items.filter(function(i){return mm[s.slot+'_'+i.id];}).length;},0);
+    var done=c===TOTAL_MEDS,isT=iso===today;
+    return '<div style="flex:1;text-align:center;"><div style="aspect-ratio:1;border-radius:8px;background:'+(done?'rgba(90,232,160,.2)':c>0?'rgba(165,90,232,.15)':'#22222E')+';border:1px solid '+(isT?'#A55AE8':done?'#5AE8A0':c>0?'#A55AE8':'#22222E')+';display:flex;align-items:center;justify-content:center;font-size:12px;margin-bottom:3px;">'+(done?'✓':c>0?c:'')+'</div>'+
+      '<p style="font-size:8px;color:'+(isT?'#A55AE8':'#555')+';">'+new Date(iso+'T12:00:00').toLocaleDateString('en-GB',{weekday:'short'}).slice(0,1)+'</p></div>';
+  }).join('');
+}
+function togMed(slot,id){var m=gm(S.viewDate),key=slot+'_'+id;setMed(S.viewDate,key,!m[key]);renderMeds();}
+
+// ── MOOD ──
+function renderMood(){
+  var today=isoToday(),d=gd(today);
+  document.getElementById('sbtns').innerHTML=STRESS.map(function(s){
+    var sel=d.stress===s.v;
+    return '<button onclick="setStress('+s.v+')" style="padding:9px 4px;border-radius:10px;background:'+(sel?s.c+'33':'var(--surf)')+';border:1px solid '+(sel?s.c:'#22222E')+';color:'+(sel?s.c:'#555')+';">'+
+      '<p style="font-size:17px;margin-bottom:2px;">'+s.e+'</p><p style="font-size:8px;">'+s.v+'</p></button>';
+  }).join('');
+  var sbig=document.getElementById('sbig');
+  if(d.stress!=null){
+    sbig.classList.remove('hidden');var sl=STRESS[d.stress-1];
+    document.getElementById('semoji').textContent=sl.e;
+    document.getElementById('slabel').textContent=sl.l;document.getElementById('slabel').style.color=sl.c;
+    document.getElementById('slevel').textContent='Level '+d.stress+'/10';
+  }else sbig.classList.add('hidden');
+  if(d.stressNote)document.getElementById('snote').value=d.stressNote;
+  // 7 day chart
+  var vals=last7().map(function(d){return gd(d).stress;}).filter(function(v){return v!=null;});
+  if(vals.length)document.getElementById('savg').textContent='Avg '+Math.round(vals.reduce(function(a,b){return a+b;},0)/vals.length)+'/10';
+  document.getElementById('scchart').innerHTML=last7().map(function(iso){
+    var sv=gd(iso).stress,sl=sv?STRESS[sv-1]:null,h=sv?Math.max(5,Math.round((sv/10)*64)):4,isT=iso===today;
+    var l=new Date(iso+'T12:00:00').toLocaleDateString('en-GB',{weekday:'short'}).slice(0,1);
+    return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;">'+
+      '<p style="font-size:7px;color:'+(sl?sl.c:'#333')+';">'+(sv||'')+'</p>'+
+      '<div style="width:100%;height:'+h+'px;border-radius:3px;background:'+(isT&&sv?sl.c:sv?sl.c+'88':'#2A2A38')+';transition:height .3s;margin-top:auto;"></div>'+
+      '<p style="font-size:8px;color:'+(isT?'#5AE8A0':'#555')+';">'+l+'</p></div>';
+  }).join('');
+  document.getElementById('stips').innerHTML=[
+    {e:'🧘',t:"Thursday yoga — never skip it, even when busy"},
+    {e:'🚶‍♀️',t:'10 min walk after meals lowers cortisol fast'},
+    {e:'😴',t:'7–8 hrs sleep — one bad night spikes cortisol next day'},
+    {e:'💊',t:'Magnesium in your multivitamin — take it consistently'},
+    {e:'🌬️',t:'4-7-8 breathing: inhale 4s, hold 7s, exhale 8s'},
+    {e:'📵',t:'No screens 30 min before bed'},
+  ].map(function(t,i){return '<div style="display:flex;gap:10px;align-items:flex-start;'+(i>0?'margin-top:9px;':'')+'"><span style="font-size:15px;flex-shrink:0;">'+t.e+'</span><p style="font-size:12px;color:#888;line-height:1.5;">'+t.t+'</p></div>';}).join('');
+}
+function setStress(v){setDay(S.viewDate,'stress',v);renderMood();renderDash();}
+function updateStressNote(){setDay(S.viewDate,'stressNote',document.getElementById('snote').value);}
+
+// ── SLEEP ──
+function renderSleep(){
+  var today=S.viewDate,d=gd(today),sh=slpHrs(d.sleepBed,d.sleepWake);
+  document.getElementById('sleepstats').innerHTML=[
+    {l:'Goal',v:SLEEP_GOAL+'h',c:'#8A7AE8'},{l:'Last Night',v:sh?sh+'h':'—',c:sh>=7?'#5AE8A0':sh?'#E8845A':'#555'},
+    {l:'Avg 7d',v:(function(){var vals=last7().map(function(d){return slpHrs(gd(d).sleepBed,gd(d).sleepWake);}).filter(function(v){return v>0;});return vals.length?Math.round(vals.reduce(function(a,b){return a+b;},0)/vals.length*10)/10+'h':'—';})(),c:'#8A7AE8'},
+  ].map(function(s){return '<div class="card" style="text-align:center;margin-bottom:0;padding:12px 10px;">'+
+    '<span class="lbl" style="margin-bottom:5px;">'+s.l+'</span><p style="font-size:16px;color:'+s.c+';font-weight:500;">'+s.v+'</p></div>';}).join('');
+  var pct=Math.min(100,Math.round((sh/SLEEP_GOAL)*100));
+  var r=document.getElementById('slring');if(r){r.setAttribute('stroke-dashoffset',182*(1-pct/100));r.setAttribute('stroke',pct>=100?'#5AE8A0':'#8A7AE8');}
+  var el=document.getElementById('slpct');if(el)el.textContent=pct+'%';
+  el=document.getElementById('slhrs');if(el){el.textContent=sh?sh+'h':'—';el.style.color=pct>=100?'#5AE8A0':'#8A7AE8';}
+  el=document.getElementById('slstat');if(el)el.textContent=sh>=8?'🎉 Goal reached!':sh>=7?'✓ Good sleep!':sh>0?Math.round((8-sh)*10)/10+'h short':'';
+  if(d.sleepBed)document.getElementById('slbed').value=d.sleepBed;
+  if(d.sleepWake)document.getElementById('slwake').value=d.sleepWake;
+  if(d.sleepNote)document.getElementById('slnote').value=d.sleepNote;
+  // Quality buttons
+  var q=d.sleepQuality||0;
+  document.getElementById('sqbtns').innerHTML=[1,2,3,4,5].map(function(v){
+    return '<button onclick="setSQ('+v+')" style="flex:1;padding:10px 0;border-radius:8px;background:'+(q>=v?'rgba(138,122,232,.3)':'var(--surf)')+';border:1px solid '+(q>=v?'#8A7AE8':'#22222E')+';color:'+(q>=v?'#8A7AE8':'#555')+';font-size:16px;">⭐</button>';
+  }).join('');
+  document.getElementById('sqlabel').textContent=q?['Poor sleep','Below average','Okay','Good','Excellent!'][q-1]:'';
+  // 7 day chart
+  var svars=last7().map(function(d){return slpHrs(gd(d).sleepBed,gd(d).sleepWake);}).filter(function(v){return v>0;});
+  if(svars.length)document.getElementById('slavg').textContent='Avg '+Math.round(svars.reduce(function(a,b){return a+b;},0)/svars.length*10)/10+'h/night';
+  var maxH=Math.max(SLEEP_GOAL,...last7().map(function(d){return slpHrs(gd(d).sleepBed,gd(d).sleepWake);}),1);
+  document.getElementById('slchart').innerHTML=last7().map(function(iso){
+    var sh=slpHrs(gd(iso).sleepBed,gd(iso).sleepWake),h=sh?Math.max(4,Math.round((sh/maxH)*80)):4;
+    var gH=Math.round((7/maxH)*80),isT=iso===today;
+    var bc=isT?'#8A7AE8':sh>=8?'#5AE8A0':sh>=7?'#8A7AE8CC':sh?'#E8845A88':'#2A2A38';
+    var l=new Date(iso+'T12:00:00').toLocaleDateString('en-GB',{weekday:'short'}).slice(0,1);
+    return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;">'+
+      '<p style="font-size:7px;color:'+(sh>=7?'#5AE8A0':sh?'#8A7AE8':'#333')+';">'+(sh?sh+'h':'')+'</p>'+
+      '<div style="width:100%;height:84px;position:relative;display:flex;align-items:flex-end;">'+
+      '<div style="position:absolute;bottom:'+gH+'px;left:0;right:0;border-top:1px dashed #8A7AE844;"></div>'+
+      '<div style="width:100%;height:'+h+'px;border-radius:3px 3px 0 0;background:'+bc+';transition:height .4s;"></div></div>'+
+      '<p style="font-size:8px;color:'+(isT?'#8A7AE8':'#555')+';">'+l+'</p></div>';
+  }).join('');
+  document.getElementById('sltips').innerHTML=[
+    {e:'📵',t:'No screens 30 min before bed — blue light suppresses melatonin'},
+    {e:'⏰',t:'Same bedtime every night — regulates cortisol'},
+    {e:'☕',t:'No caffeine after 2pm — stays in your system 6–8 hours'},
+    {e:'💊',t:'Magnesium Glycinate before dinner — aids deep sleep'},
+    {e:'🌬️',t:'4-7-8 breathing before bed: inhale 4s, hold 7s, exhale 8s'},
+  ].map(function(t,i){return '<div style="display:flex;gap:10px;align-items:flex-start;'+(i>0?'margin-top:9px;':'')+'"><span style="font-size:15px;flex-shrink:0;">'+t.e+'</span><p style="font-size:12px;color:#888;line-height:1.5;">'+t.t+'</p></div>';}).join('');
+}
+function updateSleep(){
+  var bed=document.getElementById('slbed').value,wake=document.getElementById('slwake').value;
+  setDay(S.viewDate,'sleepBed',bed);setDay(S.viewDate,'sleepWake',wake);renderSleep();renderDash();
+}
+function setSQ(v){setDay(S.viewDate,'sleepQuality',v);renderSleep();}
+function saveField(k,v){setDay(S.viewDate,k,v);}
+
+// ── RENDER ALL ──
+function renderAll(){
+  renderDash();
+  if(S.tab==='wkt')renderWkt();
+  else if(S.tab==='body')renderBody();
+  else if(S.tab==='meds')renderMeds();
+  else if(S.tab==='mood')renderMood();
+  else if(S.tab==='sleep')renderSleep();
+}
+
+// ── INIT ──
+function loadGSI(cb){
+  if(window.google&&window.google.accounts){cb();return;}
+  var s=document.createElement('script');
+  s.src='https://accounts.google.com/gsi/client';
+  s.onload=cb;s.onerror=function(){console.log('GSI failed to load');cb();};
+  document.head.appendChild(s);
+}
+function init(){
+  loadGSI(function(){
+  var today=isoToday();
+  S.viewDate=today;
+  S.calMonth=today.slice(0,8)+'01';
+  var dow=new Date().getDay();S.dayType=dow===6?'saturday':dow===0?'sunday':'regular';
+  // Chart buttons
+  document.getElementById('chart-btns').innerHTML=[
+    {m:'weight',l:'Weight',c:'#E85A8A'},{m:'water',l:'Water',c:'#5AB4E8'},
+    {m:'steps',l:'Steps',c:'#E8D45A'},{m:'stress',l:'Stress',c:'#5AE8A0'},
+  ].map(function(b){
+    return '<button data-m="'+b.m+'" onclick="setMetric(\''+b.m+'\')" style="padding:4px 10px;border-radius:20px;border:1px solid '+(b.m==='weight'?b.c:'#22222E')+';color:'+(b.m==='weight'?b.c:'#555')+';background:'+(b.m==='weight'?b.c+'33':'transparent')+';font-size:10px;">'+b.l+'</button>';
+  }).join('');
+  load();
+  renderAll();
+  document.getElementById('load').style.opacity='0';setTimeout(function(){document.getElementById('load').style.display='none';},400);
+  document.getElementById('app').style.opacity='1';
+  }); // end loadGSI
+}
+window.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>
